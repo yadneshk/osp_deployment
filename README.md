@@ -1,2 +1,2 @@
 # automation_works
-Automation scripts that may my life easy !!
+Automation scripts that makes my life easy !!
