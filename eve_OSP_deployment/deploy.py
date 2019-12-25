@@ -1,75 +1,70 @@
-import os,time
+import os, time
 
-node_state_cmd = "openstack baremetal node list | awk '{print $11}'| awk 'NR > 2'"
-import_nodes_cmd = "openstack overcloud node import /home/stack/instackenv.json &> /dev/null"
-introspect_nodes_cmd = "openstack overcloud node introspect --all-manageable  --provide &/ dev/null"
-start_vms = ""
-stop_vms = ""
-deploy_cmd = ""
-
-def introspect():
-	print "Importing nodes"
-	os.system(import_nodes_cmd)
-
-	while :
-		if ( len(set(os.popen(node_state_cmd).read().split())) == 1 and set(os.popen(node_state_cmd).read().split())[0] == "manageable" ):
-			print "all nodes in manageable"
-			break
-		else:
-			print "waiting for nodes to enter manageable state"
-		time.sleep(90)
-
-	print "Starting introspection"
-	os.system(introspect_nodes_cmd)
-
-	while :
-		if ( len(set(os.popen(node_state_cmd).read().split())) == 1 and set(os.popen(node_state_cmd).read().split())[0] == "wait call-back" ):
-			print "all nodes in wait call-back\npowering on nodes"
-			os.system(start_vms)
-			break
-		else:
-			print "waiting for nodes to enter wait call-back state"
-		time.sleep(90)
-
-	while :
-		if ( len(set(os.popen(node_state_cmd).read().split())) == 1 and set(os.popen(node_state_cmd).read().split())[0] == "active"):
-			print "all nodes in active\npowering on nodes"
-			os.system(start_vms)
-			break
-		else:
-			print "waiting for nodes to enter active state"
-		time.sleep(90)
+import_node = 'openstack overcloud node import instackenv.json'
+introspect_node = 'nohup openstack overcloud node introspect --all-manageable --provide &'
+node_state = "openstack baremetal node list -c 'Provisioning State' | awk '{print $2}'| awk 'NR > 2'"
+start_vm = 'ssh  root@<HOSTNAME> bash -x collectdstart.sh &> /dev/null'
+stop_vm = 'ssh  root@<HOSTNAME> bash -x collectdstop.sh &> /dev/null'
+deploy_file = raw_input("Enter the deployment file path: ")
 
 
-	while :
-		if ( len(set(os.popen(node_state_cmd).read().split())) == 1 and set(os.popen(node_state_cmd).read().split())[0] == "available"):
-			print "all nodes in available\nexecute deploy command now"
-			os.system(deploy_cmd)
-			break
-		else:
-			print "waiting for nodes to enter available state"
-		time.sleep(90)			
+def import_and_introspect():
+    print("Importing nodes")
+
+    os.system("source ~/stackrc")
+    os.system(import_node)
+
+    states = set(os.popen(node_state).read().split())
+
+    if len(states) == 1 and 'manageable' in states:
+        print("All node are imported")
+        os.system(introspect_node)
+        print("starting vms")
+        os.system(start_vm)
+
+    while (1):
+        states = set(os.popen(node_state).read().split())
+        if len(states) == 1 and 'available' in states:
+            print("Introspection completed")
+            os.system(stop_vm)
+            break
+        else:
+            print("Node are introspecting")
+            time.sleep(90)
 
 
 def deploy():
-	while :
-		if ( len(set(os.popen(node_state_cmd).read().split())) == 1 and set(os.popen(node_state_cmd).read().split())[0] == "wait call-back" ):
-			print "all nodes in wait call-back\npowering on nodes"
-			os.system(start_vms)
-			break
-		else:
-			print "waiting for nodes to enter wait call-back state"
-		time.sleep(90)
+    states = set(os.popen(node_state).read().split())
+    if len(states) == 1 and 'available' in states:
+        print("Starting the deployment")
+        deploy_cmd_with_nohup = "nohup  sh " + deploy_file + " &"
+        os.system(deploy_cmd_with_nohup)
 
-	while :
-		if ( len(set(os.popen(node_state_cmd).read().split())) == 1 and set(os.popen(node_state_cmd).read().split())[0] == "active"):
-			print "all nodes in active\npowering on nodes"
-			os.system(start_vms)
-			break
-		else:
-			print "waiting for nodes to enter active state"
-		time.sleep(90)
+    print("Waiting for call-back")
 
-introspect()
+    while (1):
+        states = set(os.popen(node_state).read().split())
+        if len(states) == 1 and 'wait' in states:
+            os.system(start_vm)
+            while (1):
+                states = set(os.popen(node_state).read().split())
+                if len(states) == 1 and 'active' in states:
+                    os.system(start_vm)
+                    break
+                else:
+                    print("Waiting for active")
+                    time.sleep(30)
+            break
+        else:
+            print("Waiting for call-back")
+            time.sleep(30)
+
+    foobar = input("Do you want to wait to check the deployment log or you want to exit\n1. To continue\n2. Exit")
+    if foobar == 2:
+        exit(0)
+    elif foobar == 1:
+        os.system("tailf ~/nohup.out")
+
+
+import_and_introspect()
 deploy()
-	
