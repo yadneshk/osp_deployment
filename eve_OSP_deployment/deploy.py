@@ -9,28 +9,31 @@ deploy_file = raw_input("Enter the deployment file path: ")
 
 
 def import_and_introspect():
-    print("Importing nodes")
-
-    os.system("source ~/stackrc")
-    os.system(import_node)
-
-    states = set(os.popen(node_state).read().split())
-
-    if len(states) == 1 and 'manageable' in states:
-        print("All node are imported")
-        os.system(introspect_node)
-        print("starting vms")
-        os.system(start_vm)
-
-    while (1):
+    if len(states) == 1 and 'active' in states:
+        print("All nodes found in active state. Skipping node import and introspection\n")
+    else:
+        print("Importing nodes")
+    
+        os.system("source ~/stackrc")
+        os.system(import_node)
+    
         states = set(os.popen(node_state).read().split())
-        if len(states) == 1 and 'available' in states:
-            print("Introspection completed")
-            os.system(stop_vm)
-            break
-        else:
-            print("Node are introspecting")
-            time.sleep(90)
+    
+        if len(states) == 1 and 'manageable' in states:
+            print("All node are imported")
+            os.system(introspect_node)
+            print("starting vms")
+            os.system(start_vm)
+    
+        while (1):
+            states = set(os.popen(node_state).read().split())
+            if len(states) == 1 and 'available' in states:
+                print("Introspection completed")
+                os.system(stop_vm)
+                break
+            else:
+                print("Node are introspecting")
+                time.sleep(90)
 
 
 def deploy():
