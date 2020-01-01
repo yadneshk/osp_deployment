@@ -9,6 +9,7 @@ deploy_file = raw_input("Enter the deployment file path: ")
 
 
 def import_and_introspect():
+    states = set(os.popen(node_state).read().split())
     if len(states) == 1 and 'active' in states:
         print("All nodes found in active state. Skipping node import and introspection\n")
     else:
