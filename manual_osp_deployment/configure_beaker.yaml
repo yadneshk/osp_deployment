@@ -1,0 +1,131 @@
+---
+- hosts: beaker
+  vars:
+    prov_bridge_name: br-prov
+    prov_network: provisioning
+  vars_files:
+    - vault.yaml
+  tasks:
+    - name: Registering system
+      tags:
+        - register
+      redhat_subscription:
+        state: present
+        username: "{{ username }}"
+        password: "{{ password }}"
+        auto_attach: true
+        force_register: true
+
+    #- name: Subscribing beaker machine to CDN and attaching a pool which provides OpenStack repositories
+    #  tags:
+    #    - register
+    #  redhat_subscription:
+    #    state: present
+    #    activationkey: cee-sk-130
+    #    org_id: 1979710
+    #    pool: '^(Red Hat OpenStack Platform)$'
+    #    force_register: true
+
+    - name: Disable all RHSM repositories
+      tags:
+        - register
+      rhsm_repository:
+        name: '*'
+        state: disabled
+      ignore_errors: yes
+
+    - name: Enabling required repositories
+      tags:
+       - register
+      rhsm_repository:
+        name: "{{ item }}"
+        state: enabled
+      loop:
+        - rhel-7-server-rpms
+        - rhel-7-server-extras-rpms
+        - rhel-7-server-rh-common-rpms
+        - rhel-ha-for-rhel-7-server-rpms
+        - rhel-7-server-openstack-13-rpms
+        - rhel-7-fast-datapath-rpms
+
+    - name: Install libvirt packages
+      yum:
+        name: "{{item}}"
+        state: latest
+      loop:
+        - libvirt-client
+        - libvirt-daemon
+        - qemu-kvm
+        - libvirt-daemon-driver-qemu
+        - libvirt-daemon-kvm
+        - virt-install
+        - bridge-utils
+        - libguestfs-tools
+        - net-tools
+        - libguestfs-xfs
+        - net-tools
+        - python-setuptools
+        - ipmitool
+        - python2-virtualbmc
+        - wget
+        - openvswitch
+
+    - name: Starting libvirtd & openvswitch service
+      systemd:
+        name: "{{ item }}"
+        state: started
+      loop:
+        - 'libvirtd'
+        - 'openvswitch'
+
+    - name: Enabling libvirtd & openvswitch services
+      systemd:
+        name: "{{ item }}"
+        enabled: yes
+      loop:
+        - 'libvirtd'
+        - 'openvswitch'
+
+    - name: Create /home/images dir
+      file:
+        path: /home/images
+        state: directory
+        mode: '0755'
+
+    - name: Remove /var/lib/libvirt/images dir
+      file:
+        path: /var/lib/libvirt/images
+        state: absent
+
+    - name: Creating softlinks for /home/images
+      file:
+        dest: /var/lib/libvirt/images
+        src: /home/images
+        state: link
+
+    - name: Fetching RHEL 7 KVM image
+      get_url:
+        url: http://file.pnq.redhat.com/~ykulkarn/deployment/rhosp13/kvm-images/rhel-server-7.7-update-1-x86_64-kvm.qcow2
+        dest: /home/images
+
+    - name: Fetch provisioning network xml
+      delegate_to: localhost
+      get_url:
+        url: http://file.pnq.redhat.com/~ykulkarn/deployment/provisioning.xml.j2
+        dest: /tmp
+
+    - name: Create provisioning network
+      virt_net:
+        command: define
+        name: prov_network
+        xml: '{{ lookup("template", "/tmp/provisioning.xml.j2") }}'
+
+    - name: Start network
+      virt_net:
+        command: start
+        name: "{{prov_network}}"
+
+    - name: Autostart network
+      virt_net:
+        autostart: yes
+        name: "{{prov_network}}"
