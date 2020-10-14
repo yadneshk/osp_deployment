@@ -1,52 +1,15 @@
 ---
 - hosts: beaker
-  vars:
-    prov_bridge_name: br-prov
-    prov_network: provisioning
-  vars_files:
-    - vault.yaml
   tasks:
-    - name: Registering system
-      tags:
-        - register
+    - name: Add OSP13 repo
       redhat_subscription:
-        state: present
-        username: "{{ username }}"
-        password: "{{ password }}"
-        auto_attach: true
-        force_register: true
+        activationkey: cee-sk-130
+        org_id: 1979710
 
-    #- name: Subscribing beaker machine to CDN and attaching a pool which provides OpenStack repositories
-    #  tags:
-    #    - register
-    #  redhat_subscription:
-    #    state: present
-    #    activationkey: cee-sk-130
-    #    org_id: 1979710
-    #    pool: '^(Red Hat OpenStack Platform)$'
-    #    force_register: true
-
-    - name: Disable all RHSM repositories
-      tags:
-        - register
+    - name: Enable 'rhel-7-server-openstack-13-rpms' for python-virtualbmc pkg
       rhsm_repository:
-        name: '*'
-        state: disabled
-      ignore_errors: yes
-
-    - name: Enabling required repositories
-      tags:
-       - register
-      rhsm_repository:
-        name: "{{ item }}"
+        name: rhel-7-server-openstack-13-rpms
         state: enabled
-      loop:
-        - rhel-7-server-rpms
-        - rhel-7-server-extras-rpms
-        - rhel-7-server-rh-common-rpms
-        - rhel-ha-for-rhel-7-server-rpms
-        - rhel-7-server-openstack-13-rpms
-        - rhel-7-fast-datapath-rpms
 
     - name: Install libvirt packages
       yum:
@@ -66,36 +29,24 @@
         - net-tools
         - python-setuptools
         - ipmitool
-        - python2-virtualbmc
+        - python-virtualbmc
         - wget
-        - openvswitch
 
-    - name: Starting libvirtd & openvswitch service
+    - name: Starting libvirtd service
       systemd:
-        name: "{{ item }}"
+        name: libvirtd
         state: started
-      loop:
-        - 'libvirtd'
-        - 'openvswitch'
 
-    - name: Enabling libvirtd & openvswitch services
+    - name: Enabling libvirtd
       systemd:
-        name: "{{ item }}"
+        name: libvirtd
         enabled: yes
-      loop:
-        - 'libvirtd'
-        - 'openvswitch'
 
     - name: Create /home/images dir
       file:
         path: /home/images
         state: directory
         mode: '0755'
-
-    - name: Remove /var/lib/libvirt/images dir
-      file:
-        path: /var/lib/libvirt/images
-        state: absent
 
     - name: Creating softlinks for /home/images
       file:
@@ -105,27 +56,45 @@
 
     - name: Fetching RHEL 7 KVM image
       get_url:
-        url: http://file.pnq.redhat.com/~ykulkarn/deployment/rhosp13/kvm-images/rhel-server-7.7-update-1-x86_64-kvm.qcow2
+        url: http://file.pnq.redhat.com/~ykulkarn/deployment/rhosp13/kvm-images/rhel-server-7.8-x86_64-kvm.qcow2
         dest: /home/images
 
     - name: Fetch provisioning network xml
-      delegate_to: localhost
       get_url:
-        url: http://file.pnq.redhat.com/~ykulkarn/deployment/provisioning.xml.j2
+        url: http://file.pnq.redhat.com/~ykulkarn/deployment/prov.xml
         dest: /tmp
 
-    - name: Create provisioning network
+    - name: Ensure prov, isol & external networks are present
       virt_net:
         command: define
-        name: prov_network
-        xml: '{{ lookup("template", "/tmp/provisioning.xml.j2") }}'
+        name: "{{item.network_name}}"
+        xml: "{{ lookup('template', 'networks/' + item.network_file) }}"
+      loop:
+        - network_name: provisioning
+          network_file: prov.xml
+        - network_name: isolation
+          network_file: isol.xml
+        - network_name: external
+          network_file: ext.xml
+        - network_name: default
+          network_file: def.xml
 
-    - name: Start network
+    - name: Ensure prov, isol & external networks are started
       virt_net:
         command: start
-        name: "{{prov_network}}"
+        name: "{{item}}"
+      loop:
+        - provisioning
+        - isolation
+        - external
+        - default
 
-    - name: Autostart network
+    - name: Ensure prov, isol & external networks are autostarted
       virt_net:
         autostart: yes
-        name: "{{prov_network}}"
+        name: "{{item}}"
+      loop:
+        - provisioning
+        - isolation
+        - external
+        - default

@@ -1,0 +1,8 @@
+<network>
+  <name>isolation</name>
+  <uuid>2a1f3590-f44f-4b60-8845-ee153599ae6c</uuid>
+  <bridge name='isol' stp='on' delay='0'/>
+  <mac address='52:54:00:52:86:0f'/>
+  <ip address='172.16.0.1' netmask='255.255.255.0'>
+  </ip>
+</network>

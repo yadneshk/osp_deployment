@@ -1,0 +1,8 @@
+<network>
+  <name>provisioning</name>
+  <uuid>3997f6cd-c9ba-4d61-a16c-45a12d1fb2f5</uuid>
+  <bridge name='prov' stp='on' delay='0'/>
+  <mac address='52:54:00:c3:c0:d6'/>
+  <ip address='192.168.24.254' netmask='255.255.255.0'>
+  </ip>
+</network>
