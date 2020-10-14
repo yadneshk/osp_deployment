@@ -4,7 +4,7 @@ Scripts that make my life easy !!
 
 ### OSP Manual Deployment
 ```sh
-$ ansible-playbook configure_beaker.yaml --ask-vault-pass
+$ ansible-playbook configure_beaker.yaml
 ```
 
 ### OSP Infrared Deployment
