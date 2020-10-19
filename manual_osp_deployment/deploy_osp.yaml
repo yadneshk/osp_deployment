@@ -1,0 +1,7 @@
+---
+  - name: Deploy OSP
+    hosts: beaker
+    vars_files:
+      - ./params.yaml
+    roles:
+      - configure_hypervisor

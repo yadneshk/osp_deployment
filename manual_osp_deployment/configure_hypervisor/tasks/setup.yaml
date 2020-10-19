@@ -1,0 +1,63 @@
+---
+  - name: Subscribing hypervisor
+    redhat_subscription:
+      activationkey: cee-sk-130
+      org_id: 1979710
+
+  - name: Enable 'rhel-7-server-openstack-13-rpms' for python-virtualbmc pkg
+    rhsm_repository:
+      name: rhel-7-server-openstack-13-rpms
+      state: enabled
+
+  - name: Install libvirt packages
+    yum:
+      name: "{{item}}"
+      state: latest
+    loop:
+      - libvirt-client
+      - libvirt-daemon
+      - qemu-kvm
+      - libvirt-daemon-driver-qemu
+      - libvirt-daemon-kvm
+      - virt-install
+      - bridge-utils
+      - libguestfs-tools
+      - net-tools
+      - libguestfs-xfs
+      - net-tools
+      - python-setuptools
+      - ipmitool
+      - python-virtualbmc
+      - wget
+
+  - name: Starting libvirtd service
+    systemd:
+      name: libvirtd
+      state: started
+
+  - name: Enabling libvirtd
+    systemd:
+      name: libvirtd
+      enabled: yes
+
+  - name: Create /home/images dir
+    file:
+      path: /home/images
+      state: directory
+      mode: '0755'
+
+  - name: Creating softlinks for /home/images
+    file:
+      dest: /var/lib/libvirt/images
+      src: /home/images
+      state: link
+
+  - name: Fetching RHEL 7 KVM image
+    get_url:
+      url: http://file.pnq.redhat.com/~ykulkarn/deployment/rhosp13/kvm-images/rhel-server-7.8-x86_64-kvm.qcow2
+      dest: /home/images
+
+  - name: Fetch provisioning network xml
+    get_url:
+      url: http://file.pnq.redhat.com/~ykulkarn/deployment/prov.xml
+      dest: /tmp

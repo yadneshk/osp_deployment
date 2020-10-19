@@ -1,0 +1,8 @@
+---
+# tasks file for configure_hypervisor
+
+- name: Basic configs
+  import_tasks: setup.yaml
+
+- name: Network setup
+  import_tasks: network_setup.yaml
