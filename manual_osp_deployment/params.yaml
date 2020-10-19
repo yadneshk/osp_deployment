@@ -1,0 +1,16 @@
+---
+undercloud:
+  - count: 1
+  - memory: 8192
+  - cpu: 4
+  - disk: 50
+controller:
+  - count: 1
+  - memory: 10240
+  - cpu: 6
+  - disk: 60
+compute:
+  - count: 1
+  - memory: 6192
+  - cpu: 4
+  - disk: 40

@@ -1,6 +1,4 @@
-# automation_works
-Scripts that make my life easy !!
-
+# How to run ?
 
 ### OSP Manual Deployment
 ```sh
