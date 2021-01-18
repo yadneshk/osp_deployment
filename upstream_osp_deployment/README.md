@@ -35,7 +35,7 @@ ssh -F /var/tmp/bootcamp/ssh.config.ansible undercloud ls
 ## Undercloud Deployment
 ```
 # Make sure to check the interface name of the ctlplane network and replace it in below
-./quickstart.sh -R tripleo-ci/CentOS-8/master --no-clone --tags all --nodes config/nodes/1ctlr_1comp.yml -I --teardown none -p quickstart-extras-undercloud.yml -w /var/tmp/bootcamp/ -e undercloud_local_interface=ens4 127.0.0.2
+./quickstart.sh -R tripleo-ci/CentOS-8/master --no-clone --tags all --nodes config/nodes/1ctlr_1comp.yml -I --teardown none -p quickstart-extras-undercloud.yml -w /var/tmp/bootcamp/ -e undercloud_local_interface=eth1 127.0.0.2
 ```
 
 ## Prepare the undercloud for the overcloud deployment
