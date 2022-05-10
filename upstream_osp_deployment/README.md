@@ -24,7 +24,7 @@ mkdir /var/tmp/bootcamp
 
 ## Setup VMs on the KVM host
 ```
-./quickstart.sh -R tripleo-ci/CentOS-8/master --teardown all --no-clone --tags all  --nodes config/nodes/1ctlr_1comp.yml -p quickstart.yml -w /var/tmp/bootcamp/ --extra-vars whole_disk_images=False 127.0.0.2
+./quickstart.sh --teardown all --no-clone --tags all  --nodes config/nodes/1ctlr_1comp.yml -p quickstart.yml -w /var/tmp/bootcamp/ --extra-vars whole_disk_images=False 127.0.0.2
 ```
 
 ## Ensure you can now connect to the undercloud
@@ -40,10 +40,10 @@ ssh -F /var/tmp/bootcamp/ssh.config.ansible undercloud ls
 
 ## Prepare the undercloud for the overcloud deployment
 ```
-./quickstart.sh -R tripleo-ci/CentOS-8/master --no-clone --tags all --nodes config/nodes/1ctlr_1comp.yml -I --teardown none -p quickstart-extras-overcloud-prep.yml -w /var/tmp/bootcamp/ 127.0.0.2
+./quickstart.sh --no-clone --tags all --nodes config/nodes/1ctlr_1comp.yml -I --teardown none -p quickstart-extras-overcloud-prep.yml -w /var/tmp/bootcamp/ 127.0.0.2
 ```
 
 ## Deploy overcloud
 ```
-./quickstart.sh -R tripleo-ci/CentOS-8/master --no-clone --tags all --nodes config/nodes/1ctlr_1comp.yml -I --teardown none -p quickstart-extras-overcloud.yml -w /var/tmp/bootcamp/ 127.0.0.2
+./quickstart.sh --no-clone --tags all --nodes config/nodes/1ctlr_1comp.yml -I --teardown none -p quickstart-extras-overcloud.yml -w /var/tmp/bootcamp/ 127.0.0.2
 ```
