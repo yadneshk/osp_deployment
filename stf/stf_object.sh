@@ -41,4 +41,21 @@ spec:
       - collectorType: sensubility
         debugEnabled: false
         subscriptionAddress: sensubility/cloud1-telemetry
+    name: cloud1
+  graphing:
+    enabled: false
+    grafana:
+      adminPassword: secret
+      adminUser: root
+      baseImage: docker.io/grafana/grafana:latest
+      disableSignoutMenu: false
+      ingressEnabled: false
+  highAvailability:
+    enabled: false
+  observabilityStrategy: use_community
+  transports:
+    qdr:
+      enabled: true
+      web:
+        enabled: false
 EOF
