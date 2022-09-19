@@ -2,7 +2,7 @@
 
 sudo useradd -s /bin/bash -d /home/stack -m stack
 echo "stack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/stack
-sudo yum install git wget tmux -y
+sudo yum install git wget tmux vim -y
 sudo -u stack -i git clone https://opendev.org/openstack/devstack
 sudo -u stack -i cd devstack
 sudo -u stack -i wget "https://github.com/yadneshk/osp_deployment/blob/master/devstack/local.conf"
