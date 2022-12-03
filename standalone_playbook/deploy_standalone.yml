@@ -1,6 +1,8 @@
 ---
 - name: Provision VM with OpenStack
   hosts: localhost
+  vars_files:
+    - ./vars.yml
   tasks:
   - import_role:
       name: "roles/standalone"
