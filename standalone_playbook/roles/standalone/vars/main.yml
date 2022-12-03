@@ -1,0 +1,10 @@
+---
+# vars file for standalone
+openstack_clouds_yaml: "{{ playbook_dir }}/clouds.yaml"
+openstack_cloud_name: "openstack"
+# instance_name:
+# image_name:
+# key_name:
+# network:
+# flavor:
+# security_group:

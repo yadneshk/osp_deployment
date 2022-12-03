@@ -1,0 +1,3 @@
+---
+# tasks file for standalone
+- include_tasks: "check_openstack.yml"
