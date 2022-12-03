@@ -18,7 +18,4 @@
     cloud: "{{ openstack_cloud_name }}"
     filters: {}
     timeout: 300
-  register: result
 
-- debug:
-    var: result
