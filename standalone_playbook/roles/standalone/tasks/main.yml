@@ -4,36 +4,8 @@
 # check whether OSP commands execute
 - include_tasks: "check_openstack.yml"
 
-# create VM for standalone deployment
-- name: "Create the OpenStack VM, if it doesn't already exist"
-  openstack.cloud.server:
-    state: present
-    cloud: "{{ openstack_cloud_name }}"
-    name: "{{ standalone_vm_name }}"
-    image: "{{ image_name }}"
-    key_name: "{{ key_name }}"
-    network: "{{ network }}"
-    flavor: "{{ flavor }}"
-    auto_ip: true
-    timeout: 600
-  register: standalone_server
+# delete standalone vm if it exists
+- include_tasks: "delete_standalone.yml"
 
-- set_fact:
-    standalone_user: "centos"
-
-- name: "Debug IP address"
-  debug:
-    var: standalone_server.server.accessIPv4
-
-- name: "Set the IP address for the standalone vm"
-  set_fact:
-    standalone_ip: "{{ standalone_server.server.accessIPv4 }}"
-
-- debug:
-    var: standalone_ip
-
-- name: "Create the {{ standalone_vm_name }}.inv file"
-  template:
-    src: standalone.inv.j2
-    dest: "{{ inventory_dir }}/{{ standalone_vm_name }}.inv"
-    mode: '0644'
+# create standalone vm
+- include_tasks: "create_standalone.yml"
