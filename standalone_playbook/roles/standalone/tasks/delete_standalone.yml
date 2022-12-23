@@ -12,7 +12,7 @@
     timeout: 300
   register: server_list
 
-- name: "Delete {{ standalone_vm_name }} VM, if exists"
+- name: "Delete {{ standalone_vm_name }} if exists"
   openstack.cloud.server:
     cloud: "{{ openstack_cloud_name }}"
     state: absent

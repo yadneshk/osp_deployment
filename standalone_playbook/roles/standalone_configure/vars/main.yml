@@ -1,0 +1,8 @@
+---
+# vars file for standalone_configure
+IP: 192.168.24.2
+VIP: 192.168.24.3
+NETMASK: 24
+INTERFACE: eth1
+USER: centos
+HOME: /home/centos
