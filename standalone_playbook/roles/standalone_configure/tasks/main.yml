@@ -9,7 +9,7 @@
 - name: Set hostname
   become: true
   shell:
-    cmd: hostnamectl set-hostname "{{ standalone_hostname }}".localdomain
+    cmd: hostnamectl set-hostname "{{ standalone_hostname }}-{{ branch }}".localdomain
 
 - name: Install tripleo-repos-rpm
   become: true
@@ -21,7 +21,7 @@
 - name: Enable tripleo repos
   become: true
   shell:
-    cmd: sudo -E tripleo-repos current-tripleo -b zed
+    cmd: sudo -E tripleo-repos current-tripleo -b {{ branch }}
 
 - name: Install python3-tripleoclient
   become: true

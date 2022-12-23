@@ -6,6 +6,8 @@
 
 # delete standalone vm if it exists
 - include_tasks: "delete_standalone.yml"
+  tags:
+    - delete_standalone
 
 # create standalone vm
 - include_tasks: "create_standalone.yml"
