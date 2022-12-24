@@ -1,10 +1,10 @@
 ## Setup user
 ```
-useradd oooq
-echo 0 | passwd --stdin oooq
-echo "oooq ALL=(root) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/oooq
-sudo chmod 0440 /etc/sudoers.d/oooq
-su - oooq
+useradd deployer
+echo 0 | passwd --stdin deployer
+echo "deployer ALL=(root) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/deployer
+sudo chmod 0440 /etc/sudoers.d/deployer
+su - deployer
 ```
 
 ## Setup ssh-keys
@@ -19,31 +19,19 @@ yum -y install git tmux wget ansible vim
 git clone https://opendev.org/openstack/tripleo-quickstart.git
 cd tripleo-quickstart
 ./quickstart.sh --install-deps
-mkdir /var/tmp/bootcamp
 ```
 
-## Setup VMs on the KVM host
+## Setup env
 ```
-./quickstart.sh --teardown none --no-clone --tags all  --nodes config/nodes/3ctlr_2comp_3ceph.yml -I -p quickstart-extras-undercloud.yml --extra-args ntp_server=clock.corp.redhat.com 127.0.0.2
-```
+#!/bin/bash
 
-## Ensure you can now connect to the undercloud
-```
-ssh -F ~/.quickstart/ssh.config.ansible undercloud 
-```
+set -Eeuo pipefail
 
-## Undercloud Deployment
-```
-# Make sure to check the interface name of the ctlplane network and replace it in below
-./quickstart.sh --teardown none --no-clone --tags all  --nodes config/nodes/3ctlr_2comp_3ceph.yml -I -p quickstart-extras-undercloud.yml --extra-vars ntp_server=clock.corp.redhat.com 127.0.0.2
-```
+export LIBGUESTFS_BACKEND_SETTINGS=network_bridge=virbr0
+export UNDERCLOUD_NTP_SERVER=<ntp server>
 
-## Prepare the undercloud for the overcloud deployment
-```
-./quickstart.sh --no-clone --tags all --nodes config/nodes/3ctlr_2comp_3ceph.yml -I --teardown none -p quickstart-extras-overcloud-prep.yml 127.0.0.2
-```
-
-## Deploy overcloud
-```
-./quickstart.sh --no-clone --tags all --nodes config/nodes/3ctlr_2comp_3ceph.yml -I --teardown none -p quickstart-extras-overcloud.yml 127.0.0.2
+./quickstart.sh --teardown  all --no-clone --tags all --nodes config/nodes/3ctlr_2comp_3ceph.yml -p quickstart.yml 127.0.0.2
+./quickstart.sh --teardown none --no-clone --tags all --nodes config/nodes/3ctlr_2comp_3ceph.yml -I -p quickstart-extras-undercloud.yml --extra-vars undercloud_undercloud_ntp_servers=$UNDERCLOUD_NTP_SERVER 127.0.0.2
+./quickstart.sh --teardown none --no-clone --tags all --nodes config/nodes/3ctlr_2comp_3ceph.yml -I -p quickstart-extras-overcloud-prep.yml 127.0.0.2
+./quickstart.sh --teardown none --no-clone --tags all --nodes config/nodes/3ctlr_2comp_3ceph.yml -I -p quickstart-extras-overcloud.yml 127.0.0.2
 ```
