@@ -24,26 +24,26 @@ mkdir /var/tmp/bootcamp
 
 ## Setup VMs on the KVM host
 ```
-./quickstart.sh --teardown all --no-clone --tags all  --nodes config/nodes/1ctlr_1comp.yml -p quickstart.yml -w /var/tmp/bootcamp/ --extra-vars whole_disk_images=False 127.0.0.2
+./quickstart.sh --teardown none --no-clone --tags all  --nodes config/nodes/3ctlr_2comp_3ceph.yml -I -p quickstart-extras-undercloud.yml --extra-args ntp_server=clock.corp.redhat.com 127.0.0.2
 ```
 
 ## Ensure you can now connect to the undercloud
 ```
-ssh -F /var/tmp/bootcamp/ssh.config.ansible undercloud ls  
+ssh -F ~/.quickstart/ssh.config.ansible undercloud 
 ```
 
 ## Undercloud Deployment
 ```
 # Make sure to check the interface name of the ctlplane network and replace it in below
-./quickstart.sh -R tripleo-ci/CentOS-8/master --no-clone --tags all --nodes config/nodes/1ctlr_1comp.yml -I --teardown none -p quickstart-extras-undercloud.yml -w /var/tmp/bootcamp/ 127.0.0.2
+./quickstart.sh --teardown none --no-clone --tags all  --nodes config/nodes/3ctlr_2comp_3ceph.yml -I -p quickstart-extras-undercloud.yml --extra-vars ntp_server=clock.corp.redhat.com 127.0.0.2
 ```
 
 ## Prepare the undercloud for the overcloud deployment
 ```
-./quickstart.sh --no-clone --tags all --nodes config/nodes/1ctlr_1comp.yml -I --teardown none -p quickstart-extras-overcloud-prep.yml -w /var/tmp/bootcamp/ 127.0.0.2
+./quickstart.sh --no-clone --tags all --nodes config/nodes/3ctlr_2comp_3ceph.yml -I --teardown none -p quickstart-extras-overcloud-prep.yml 127.0.0.2
 ```
 
 ## Deploy overcloud
 ```
-./quickstart.sh --no-clone --tags all --nodes config/nodes/1ctlr_1comp.yml -I --teardown none -p quickstart-extras-overcloud.yml -w /var/tmp/bootcamp/ 127.0.0.2
+./quickstart.sh --no-clone --tags all --nodes config/nodes/3ctlr_2comp_3ceph.yml -I --teardown none -p quickstart-extras-overcloud.yml 127.0.0.2
 ```
