@@ -4,7 +4,7 @@
   openstack.cloud.server:
     state: present
     cloud: "{{ openstack_cloud_name }}"
-    name: "{{ standalone_vm_name }}"
+    name: "{{ standalone_vm_name }}_{{ branch }}"
     image: "{{ image_name }}"
     key_name: "{{ key_name }}"
     nics: 
@@ -35,8 +35,8 @@
 - debug:
     var: standalone_ip
 
-- name: "Create the {{ standalone_vm_name }}.inv file"
+- name: "Create the {{ standalone_vm_name }}_{{ branch }}.inv file"
   template:
     src: standalone.inv.j2
-    dest: "{{ inventory_dir }}/{{ standalone_vm_name }}.inv"
+    dest: "{{ inventory_dir }}/{{ standalone_vm_name }}_{{ branch }}.inv"
     mode: '0644'

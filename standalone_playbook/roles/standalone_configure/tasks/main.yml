@@ -3,7 +3,7 @@
 
 - name: Wait 300 seconds, but only start checking after 5 seconds
   wait_for_connection:
-    delay: 5
+    delay: 2
     timeout: 300
 
 - name: Set hostname
@@ -22,6 +22,15 @@
   become: true
   shell:
     cmd: sudo -E tripleo-repos current-tripleo -b {{ branch }}
+
+- name: Update system and reboot
+  become: true
+  yum: name=* state=latest
+
+- name: Wait 300 seconds, but only start checking after 5 seconds
+  become: true
+  reboot:
+    reboot_timeout: 600
 
 - name: Install python3-tripleoclient
   become: true
@@ -55,3 +64,7 @@
     src: deploy.sh.j2
     dest: "{{ HOME }}/deploy.sh"
     mode: 0755
+  
+- name: Execute deploy.sh
+  shell:
+    cmd: bash ~/deploy.sh &

@@ -1,8 +1,8 @@
 ---
 # Delete standalone vm if it exists
-- name: "Remove {{ standalone_vm_name }}.inv"
+- name: "Remove {{ standalone_vm_name }}_{{ branch }}.inv"
   file:
-    path: "{{ inventory_dir }}/{{ standalone_vm_name }}.inv"
+    path: "{{ inventory_dir }}/{{ standalone_vm_name }}_{{ branch }}.inv"
     state: absent
   tags:
     - delete_standalone
@@ -10,17 +10,17 @@
 - name: "Check server list, in case we already have it"
   openstack.cloud.server_info:
     cloud: "{{ openstack_cloud_name }}"
-    server: "{{ standalone_vm_name }}"
+    server: "{{ standalone_vm_name }}_{{ branch }}"
     timeout: 300
   register: server_list
   tags:
     - delete_standalone
 
-- name: "Delete {{ standalone_vm_name }} if exists"
+- name: "Delete {{ standalone_vm_name }}_{{ branch }}"
   openstack.cloud.server:
     cloud: "{{ openstack_cloud_name }}"
     state: absent
-    name: "{{ standalone_vm_name }}"
+    name: "{{ standalone_vm_name }}_{{ branch }}"
     timeout: 600
   when:
     - server_list.openstack_servers | length != 0
