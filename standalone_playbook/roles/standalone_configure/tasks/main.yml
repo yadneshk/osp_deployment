@@ -59,6 +59,11 @@
     src: standalone_parameters.yaml.j2
     dest: "{{ HOME }}/standalone_parameters.yaml"
 
+- name: Create telemetry_services.yaml
+  template:
+    src: telemetry_services.yaml.j2
+    dest: "{{ HOME }}/telemetry_services.yaml"
+
 - name: Create deploy.sh
   template:
     src: deploy.sh.j2
@@ -66,5 +71,10 @@
     mode: 0755
   
 - name: Execute deploy.sh
-  shell:
-    cmd: bash ~/deploy.sh &
+  command: "{{ HOME }}/deploy.sh &"
+  register: output
+
+- name: Export OS_CLOUD to bashrc
+  lineinfile:
+    path: "{{ HOME }}/.bashrc"
+    line: "export OS_CLOUD=standalone"
