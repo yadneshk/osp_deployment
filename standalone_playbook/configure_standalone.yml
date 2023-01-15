@@ -5,4 +5,4 @@
     - ./vars.yml
   tasks:
   - import_role:
-      name: "roles/standalone_configure"
+      name: "roles/standalone"
