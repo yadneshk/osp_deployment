@@ -2,6 +2,6 @@
 
 set -xeo pipefail
 
-ansible-playbook deploy_vm.yml
+ansible-playbook -e @vars_devstack.yml deploy_vm.yml
 
-ansible-playbook -i $(find . -iname *.inv) configure_devstack.yml
+ansible-playbook -i $(find . -iname *.inv) -e @vars_devstack.yml configure_devstack.yml

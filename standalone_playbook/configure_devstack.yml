@@ -1,8 +1,6 @@
 ---
 - name: Configure VM
   hosts: standalone
-  vars_files:
-    - ./vars.yml
   tasks:
   - import_role:
       name: "roles/devstack"
