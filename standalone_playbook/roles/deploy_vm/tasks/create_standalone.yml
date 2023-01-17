@@ -9,7 +9,7 @@
     key_name: "{{ key_name }}"
     nics: 
       - net-name: "{{ external_network }}"
-      - net-name: "{{ ctlplane_network }}"
+        #      - net-name: "{{ ctlplane_network }}"
     flavor: "{{ flavor }}"
     auto_ip: true
     timeout: 600

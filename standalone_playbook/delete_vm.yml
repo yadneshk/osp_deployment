@@ -1,0 +1,24 @@
+---
+- name: Provision VM with OpenStack
+  hosts: localhost
+  tasks:
+    - name: "Check server list, in case we already have it"
+      openstack.cloud.server_info:
+        cloud: openstack
+        server: "{{ standalone_vm_name }}_{{ branch }}"
+        timeout: 300
+      register: server_list
+
+    - name: "Delete {{ standalone_vm_name }}_{{ branch }}"
+      openstack.cloud.server:
+        cloud: openstack
+        state: absent
+        name: "{{ standalone_vm_name }}_{{ branch }}"
+        timeout: 600
+      when:
+        - server_list.openstack_servers | length != 0
+
+    - name: Remove {{ standalone_vm_name }}_{{ branch }}.inv
+      file:
+        path: "{{ playbook_dir }}/{{ standalone_vm_name }}_{{ branch }}.inv"
+        state: absent

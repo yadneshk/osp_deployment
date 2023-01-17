@@ -1,0 +1,7 @@
+---
+standalone_vm_name: ykulkarn_devstack
+standalone_hostname: devstack
+standalone_user: centos
+image_name: "CentOS-Stream-GenericCloud-9-20220718.0.x86_64"
+external_network: provider_net_shared_3
+branch: master

@@ -2,3 +2,6 @@
 # vars file for standalone
 openstack_clouds_yaml: "{{ playbook_dir }}/clouds.yaml"
 openstack_cloud_name: "openstack"
+key_name: pop_os_key
+flavor: g.standard.xxxl
+inventory_dir: "{{ playbook_dir }}"

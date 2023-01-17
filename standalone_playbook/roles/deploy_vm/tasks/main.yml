@@ -4,10 +4,5 @@
 # check whether OSP commands execute
 - include_tasks: "check_openstack.yml"
 
-# delete standalone vm if it exists
-- include_tasks: "delete_standalone.yml"
-  tags:
-    - delete_standalone
-
 # create standalone vm
 - include_tasks: "create_standalone.yml"

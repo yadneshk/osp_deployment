@@ -23,5 +23,5 @@ parameter_defaults:
     InterfaceLocalMtu: 1500
     # Needed if running in a VM, not needed if on baremetal
     NovaComputeLibvirtType: qemu
-    NtpServer: {{ ntp_server }}
+    NtpServer: {{ lookup('env','NTP_SERVER') }}
     KernelDisableIPv6: 1
