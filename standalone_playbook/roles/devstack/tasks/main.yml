@@ -71,6 +71,8 @@
     src: local.conf.j2
     dest: "$HOME/devstack/local.conf"
 
-# - name: Execute stack.sh
-#   command: "/home/{{ standalone_user }}/devstack/stack.sh &"
-#   register: output
+- name: Execute stack.sh
+  become: yes
+  become_user: stack
+  shell: "$HOME/devstack/stack.sh 2>&1 &"
+  register: output

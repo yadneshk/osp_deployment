@@ -70,11 +70,11 @@
     dest: "{{ HOME }}/deploy.sh"
     mode: 0755
   
-- name: Execute deploy.sh
-  command: "{{ HOME }}/deploy.sh &"
-  register: output
+# - name: Execute deploy.sh
+#   command: "{{ HOME }}/deploy.sh &"
+#   register: output
 
-- name: Export OS_CLOUD to bashrc
-  lineinfile:
-    path: "{{ HOME }}/.bashrc"
-    line: "export OS_CLOUD=standalone"
+# - name: Export OS_CLOUD to bashrc
+#   lineinfile:
+#     path: "{{ HOME }}/.bashrc"
+#     line: "export OS_CLOUD=standalone"

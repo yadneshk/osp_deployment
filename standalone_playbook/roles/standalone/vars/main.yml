@@ -7,6 +7,3 @@ INTERFACE: eth1
 USER: centos
 HOME: /home/centos
 tripleo_repos_rpm: "https://trunk.rdoproject.org/centos9/component/tripleo/current/python3-tripleo-repos-0.1.1-0.20230111082341.c73cb0f.el9.noarch.rpm"
-external_network: provider_net_shared_3
-ctlplane_network: ykulkarn_private
-image_name: "CentOS-Stream-GenericCloud-9-20220718.0.x86_64"

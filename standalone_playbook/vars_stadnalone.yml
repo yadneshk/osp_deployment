@@ -1,6 +1,0 @@
----
-standalone_vm_name: ykulkarn_standalone
-standalone_hostname: standalone
-standalone_user: centos
-branch: master
-ntp_server: "{{ lookup('env','NTP_SERVER') }}"

@@ -1,0 +1,9 @@
+---
+standalone_vm_name: ykulkarn_standalone2
+standalone_hostname: standalone
+standalone_user: centos
+branch: master
+ntp_server: "{{ lookup('env','NTP_SERVER') }}"
+image_name: "CentOS-Stream-GenericCloud-9-20220718.0.x86_64"
+external_network: provider_net_shared_3
+ctlplane_network: ykulkarn_private
