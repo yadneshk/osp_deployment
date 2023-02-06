@@ -1,6 +1,0 @@
----
-- name: Configure VM
-  hosts: standalone
-  tasks:
-  - import_role:
-      name: "roles/devstack"

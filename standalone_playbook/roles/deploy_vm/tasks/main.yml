@@ -1,8 +1,0 @@
----
-# tasks file for standalone
-
-# check whether OSP commands execute
-- include_tasks: "check_openstack.yml"
-
-# create standalone vm
-- include_tasks: "create_standalone.yml"

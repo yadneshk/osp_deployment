@@ -1,6 +1,0 @@
----
-- name: Provision VM with OpenStack
-  hosts: localhost
-  tasks:
-  - import_role:
-      name: "roles/deploy_vm"

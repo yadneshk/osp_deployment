@@ -1,9 +1,0 @@
----
-# vars file for standalone_configure
-IP: 192.168.24.2
-VIP: 192.168.24.3
-NETMASK: 24
-INTERFACE: eth1
-USER: centos
-HOME: /home/centos
-tripleo_repos_rpm: "https://trunk.rdoproject.org/centos9/component/tripleo/current/python3-tripleo-repos-0.1.1-0.20230111082341.c73cb0f.el9.noarch.rpm"
