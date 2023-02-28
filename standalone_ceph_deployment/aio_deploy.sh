@@ -134,6 +134,9 @@ parameter_defaults:
     CeilometerEnablePanko: false
     GnocchiArchivePolicy: 'high'
 
+    CephAnsibleExtraConfig:
+        common_single_host_mode: true
+
     EventPipelinePublishers: ['gnocchi://?filter_project=service']
     PipelinePublishers: ['gnocchi://?filter_project=service']
 
@@ -197,6 +200,10 @@ parameter_defaults:
           local:
             host: "%{hiera('fqdn_canonical')}"
             port: 11211
+        collectd::plugin::ceph::daemons:
+        - 'ceph-mon.controller-00'
+        - 'ceph-osd.01'
+        - 'ceph-osd.02'
 EOF
 
 export CEPH_CLIENT_KEY=$(sudo cat /etc/ceph/ceph.client.admin.keyring | grep key | awk '{print $3}')
