@@ -18,6 +18,15 @@ ssh-copy-id root@127.0.0.2
 yum -y install git tmux wget ansible vim
 git clone https://opendev.org/openstack/tripleo-quickstart.git
 cd tripleo-quickstart
+export NTP_SERVER=clock.corp.redhat.com
+cat <<EOF >  extra-vars.yaml
+extra_args: >-
+  --ntp-server $NTP_SERVER
+
+undercloud_undercloud_ntp_servers: $NTP_SERVER
+undercloud_clean_nodes: False
+EOF
+
 ./quickstart.sh --install-deps
 ```
 
@@ -27,11 +36,16 @@ cd tripleo-quickstart
 
 set -Eeuo pipefail
 
-export LIBGUESTFS_BACKEND_SETTINGS=network_bridge=virbr0
-export UNDERCLOUD_NTP_SERVER=<ntp server>
+#RELEASE=wallaby
+#RELEASE=tripleo-ci/CentOS-9/wallaby
+RELEASE=tripleo-ci/CentOS-8/wallaby
+NODES_CONFIG=1ctlr_1comp_1ceph
 
-./quickstart.sh --teardown  all --no-clone --tags all --nodes config/nodes/3ctlr_2comp_3ceph.yml -p quickstart.yml 127.0.0.2
-./quickstart.sh --teardown none --no-clone --tags all --nodes config/nodes/3ctlr_2comp_3ceph.yml -I -p quickstart-extras-undercloud.yml --extra-vars undercloud_undercloud_ntp_servers=$UNDERCLOUD_NTP_SERVER 127.0.0.2
-./quickstart.sh --teardown none --no-clone --tags all --nodes config/nodes/3ctlr_2comp_3ceph.yml -I -p quickstart-extras-overcloud-prep.yml 127.0.0.2
-./quickstart.sh --teardown none --no-clone --tags all --nodes config/nodes/3ctlr_2comp_3ceph.yml -I -p quickstart-extras-overcloud.yml 127.0.0.2
+cd ~/tripleo-quickstart
+./quickstart.sh -b -X -R ${RELEASE} --tags all --nodes config/nodes/${NODES_CONFIG}.yml --extra-vars @`pwd`/extra-vars.yaml --extra-vars @/root/tripleo-quickstart/config/general_config/featureset049.yml -p quickstart.yml 127.0.0.2
+
+cd ~/.quickstart/tripleo-quickstart
+./quickstart.sh -R ${RELEASE} --tags all -I -T none --nodes config/nodes/${NODES_CONFIG}.yml --extra-vars @/root/tripleo-quickstart/extra-vars.yaml --extra-vars @/root/tripleo-quickstart/config/general_config/featureset049.yml -p quickstart-extras-undercloud.yml 127.0.0.2
+./quickstart.sh -R ${RELEASE} --tags all -I -T none --nodes config/nodes/${NODES_CONFIG}.yml --extra-vars @/root/tripleo-quickstart/extra-vars.yaml --extra-vars @/root/tripleo-quickstart/config/general_config/featureset049.yml -p quickstart-extras-overcloud-prep.yml 127.0.0.2
+./quickstart.sh -R ${RELEASE} --tags all -I -T none --nodes config/nodes/${NODES_CONFIG}.yml --extra-vars @/root/tripleo-quickstart/extra-vars.yaml --extra-vars @/root/tripleo-quickstart/config/general_config/featureset049.yml -p quickstart-extras-overcloud.yml 127.0.0.2
 ```
