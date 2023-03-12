@@ -1,10 +1,10 @@
 ## Setup user
 ```
-useradd deployer
-echo 0 | passwd --stdin deployer
-echo "deployer ALL=(root) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/deployer
-sudo chmod 0440 /etc/sudoers.d/deployer
-su - deployer
+useradd oooq
+echo 0 | passwd --stdin oooq
+echo "deployer ALL=(root) NOPASSWD:ALL" | sudo tee -a /etc/sudoers.d/oooq
+sudo chmod 0440 /etc/sudoers.d/oooq
+su - oooq
 ```
 
 ## Setup ssh-keys
