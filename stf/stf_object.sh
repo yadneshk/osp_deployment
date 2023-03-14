@@ -10,6 +10,32 @@ spec:
     alertmanager:
       storage:
         strategy: ephemeral
+  alertmanagerConfigManifest: |
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: 'alertmanager-default'
+      namespace: 'service-telemetry'
+    type: Opaque
+    stringData:
+      alertmanager.yaml: |-
+        global:
+          resolve_timeout: 10m
+        route:
+          group_by: ['job']
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 12h
+          receiver: 'email'
+        receivers:
+        - name: 'email'
+          email_configs:
+          - to: 'xxxxx@gmail.com'
+            from: 'xxxx@gmail.com'
+            smarthost: 'smtp.gmail.com:587'
+            auth_username: 'xxxxx@gmail.com'
+            auth_password: 'put app_password here'
+            require_tls: true
   backends:
     metrics:
       prometheus:
