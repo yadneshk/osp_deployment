@@ -56,7 +56,7 @@ sudo ip link set ceph-dummy0 up
 
 cat <<EOF > $HOME/standalone_parameters.yaml
 parameter_defaults:
-  CloudName: 192.168.24.2
+  CloudName: $IP
   ControlPlaneStaticRoutes: []
   Debug: true
   DeploymentUser: centos
@@ -64,7 +64,7 @@ parameter_defaults:
     - 10.11.5.160
     - 10.2.70.215
   DockerInsecureRegistryAddress:
-    - 192.168.24.2:8787
+    - $IP:8787
   NeutronPublicInterface: eth1
   # domain name used by the host
   CloudDomain: localdomain
