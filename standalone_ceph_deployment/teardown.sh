@@ -21,7 +21,6 @@ sudo rm -rf \
     /var/lib/mysql/* \
     /etc/openstack \
     /etc/ceph/* \
-    ~/*.yaml \
     ~/*.log \
     /etc/systemd/system/tripleo_podman.service \
     /etc/systemd/system/ceph-osd-losetup.service
