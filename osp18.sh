@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export DNS=
+export NTP=
 
 cd ~/install_yamls/devsetup
 make edpm_play_cleanup
@@ -24,7 +26,7 @@ NETWORK_ISOLATION=false make openstack_deploy
 make ansibleee
 cd ~/install_yamls/devsetup
 make crc_attach_default_interface
-DATAPLANE_DNS_SERVER=<> DATAPLANE_CHRONY_NTP_SERVER=clock.redhat.com EDPM_COMPUTE_SUFFIX=0 make edpm_compute
-DATAPLANE_DNS_SERVER=<> DATAPLANE_CHRONY_NTP_SERVER=clock.redhat.com EDPM_COMPUTE_SUFFIX=0 make edpm_compute_repos
+DATAPLANE_DNS_SERVER=$DNS DATAPLANE_CHRONY_NTP_SERVER=$NTP EDPM_COMPUTE_SUFFIX=0 DATAPLANE_SINGLE_NODE=false make edpm_compute
+DATAPLANE_DNS_SERVER=$DNS DATAPLANE_CHRONY_NTP_SERVER=$NTP EDPM_COMPUTE_SUFFIX=0 DATAPLANE_SINGLE_NODE=false make edpm_compute_repos
 cd ~/install_yamls/
-DATAPLANE_DNS_SERVER=<> DATAPLANE_CHRONY_NTP_SERVER=clock.redhat.com EDPM_COMPUTE_SUFFIX=0 make edpm_deploy
+DATAPLANE_DNS_SERVER=$DNS DATAPLANE_CHRONY_NTP_SERVER=$NTP EDPM_COMPUTE_SUFFIX=0 DATAPLANE_SINGLE_NODE=false make edpm_deploy
