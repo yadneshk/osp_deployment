@@ -24,8 +24,7 @@ NETWORK_ISOLATION=false make openstack_deploy
 make ansibleee
 cd ~/install_yamls/devsetup
 make crc_attach_default_interface
-EDPM_COMPUTE_SUFFIX=0 make edpm_compute
-EDPM_COMPUTE_SUFFIX=0 make edpm_compute_repos
+DATAPLANE_CHRONY_NTP_SERVER=clock.redhat.com EDPM_COMPUTE_SUFFIX=0 make edpm_compute
+DATAPLANE_CHRONY_NTP_SERVER=clock.redhat.com EDPM_COMPUTE_SUFFIX=0 make edpm_compute_repos
 cd ~/install_yamls/
-EDPM_COMPUTE_SUFFIX=0 make edpm_deploy
-
+DATAPLANE_CHRONY_NTP_SERVER=clock.redhat.com EDPM_COMPUTE_SUFFIX=0 make edpm_deploy
