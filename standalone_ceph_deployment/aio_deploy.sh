@@ -146,7 +146,6 @@ sudo openstack tripleo deploy --yes \
 -e $HOME/containers-prepare-parameters.yaml \
 -e $HOME/standalone_parameters.yaml \
 -e $HOME/telemetry_services.yaml \
---output-dir $HOME/tripleo_output \
---reproduce-command > $HOME/standalone_deploy.log 2>&1
+--output-dir $HOME/tripleo_output > $HOME/standalone_deploy.log 2>&1
 
 echo "export OS_CLOUD=standalone" >> ~/.bashrc
