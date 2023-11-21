@@ -6,7 +6,6 @@ export IP=192.168.24.2
 export VIP=192.168.24.3
 export NETMASK=24
 export INTERFACE=eth1
-export CEPH_IP=192.168.42.2
 
 
 sudo hostnamectl set-hostname psi-standalone.localdomain
@@ -23,49 +22,18 @@ sudo yum install -y python3-tripleoclient
 
 openstack tripleo container image prepare default --output-env-file $HOME/containers-prepare-parameters.yaml
 
-sudo dd if=/dev/zero of=/var/lib/ceph-osd.img bs=1 count=0 seek=7G
-sudo losetup /dev/loop3 /var/lib/ceph-osd.img
-sudo pvcreate /dev/loop3
-sudo vgcreate vg2 /dev/loop3
-sudo lvcreate -n data-lv2 -l +100%FREE vg2
-
-cat <<EOF > /tmp/ceph-osd-losetup.service
-[Unit]
-Description=Ceph OSD losetup
-After=syslog.target
-
-[Service]
-Type=oneshot
-ExecStart=/bin/bash -c '/sbin/losetup /dev/loop3 || \
-/sbin/losetup /dev/loop3 /var/lib/ceph-osd.img ; partprobe /dev/loop3'
-ExecStop=/sbin/losetup -d /dev/loop3
-RemainAfterExit=yes
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-sudo mv /tmp/ceph-osd-losetup.service /etc/systemd/system/
-sudo restorecon /etc/systemd/system/ceph-osd-losetup.service
-sudo systemctl enable ceph-osd-losetup.service
-
-sudo ip link add ceph-dummy0 type dummy
-sudo ip addr add 192.168.42.2/24 dev ceph-dummy0
-sudo ip addr add 192.168.42.3/32 dev ceph-dummy0
-sudo ip link set ceph-dummy0 up
-
 cat <<EOF > $HOME/standalone_parameters.yaml
 parameter_defaults:
   CloudName: $IP
   ControlPlaneStaticRoutes: []
   Debug: true
-  DeploymentUser: centos
+  DeploymentUser: $USER
   DnsServers:
     - 10.11.5.160
     - 10.2.70.215
   DockerInsecureRegistryAddress:
     - $IP:8787
-  NeutronPublicInterface: eth1
+  NeutronPublicInterface: $INTERFACE
   # domain name used by the host
   CloudDomain: localdomain
   NeutronDnsDomain: localdomain
@@ -76,47 +44,13 @@ parameter_defaults:
   # enable to force metadata for public net
   #NeutronEnableForceMetadata: true
   StandaloneEnableRoutedNetworks: false
-  StandaloneHomeDir: /home/centos
+  StandaloneHomeDir: /home/$USER
   InterfaceLocalMtu: 1500
   # Needed if running in a VM, not needed if on baremetal
   NovaComputeLibvirtType: qemu
   KernelDisableIPv6: 1
   NtpServer: 'clock.redhat.com'
 EOF
-
-cat <<EOF > $HOME/osd_spec.yaml
-data_devices:
-  paths:
-    - /dev/vg2/data-lv2
-EOF
-
-sudo openstack overcloud ceph spec \
---standalone \
---mon-ip $CEPH_IP \
---osd-spec $HOME/osd_spec.yaml \
---output $HOME/ceph_spec.yaml
-
-sudo openstack overcloud ceph user enable \
---standalone \
-$HOME/ceph_spec.yaml
-
-cat <<EOF > $HOME/initial_ceph.conf
-[global]
-osd pool default size = 1
-[mon]
-mon_warn_on_pool_no_redundancy = false
-EOF
-
-sudo openstack overcloud ceph deploy \
---mon-ip $CEPH_IP \
---ceph-spec $HOME/ceph_spec.yaml \
---config $HOME/initial_ceph.conf \
---standalone \
---single-host-defaults \
---skip-hosts-config \
---skip-container-registry-config \
---skip-user-create \
---output $HOME/deployed_ceph.yaml
 
 cat <<EOF > $HOME/telemetry_services.yaml
 resource_registry:
