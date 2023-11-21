@@ -68,9 +68,6 @@ parameter_defaults:
     CeilometerEnablePanko: false
     GnocchiArchivePolicy: 'high'
 
-    CephAnsibleExtraConfig:
-        common_single_host_mode: true
-
     EventPipelinePublishers: ['gnocchi://?filter_project=service']
     PipelinePublishers: ['gnocchi://?filter_project=service']
 
@@ -134,42 +131,7 @@ parameter_defaults:
           local:
             host: "%{hiera('fqdn_canonical')}"
             port: 11211
-        collectd::plugin::ceph::daemons:
-        - 'ceph-mon.controller-00'
-        - 'ceph-osd.01'
-        - 'ceph-osd.02'
 EOF
-
-export CEPH_CLIENT_KEY=$(sudo cat /etc/ceph/ceph.client.admin.keyring | grep key | awk '{print $3}')
-
-cat <<EOF > $HOME/ceph.client.glance.keyring
-[client.glance]
-   key = $CEPH_CLIENT_KEY
-   caps mgr = allow *
-   caps mon = profile rbd
-   caps osd = profile rbd pool=images
-EOF
-sudo mv $HOME/ceph.client.glance.keyring /etc/ceph
-
-cat <<EOF > $HOME/ceph.client.openstack.keyring
-[client.openstack]
-   key = $CEPH_CLIENT_KEY
-   caps mgr = "allow *"
-   caps mon = "profile rbd"
-   caps osd = "profile rbd pool=vms, profile rbd pool=volumes, profile rbd pool=images"
-EOF
-sudo mv $HOME/ceph.client.openstack.keyring /etc/ceph
-
-cat <<EOF > $HOME/ceph.client.radosgw.keyring
-[client.radosgw]
-   key = $CEPH_CLIENT_KEY 
-   caps mgr = "allow *"
-   caps mon = "allow rw"
-   caps osd = "allow rwx"
-EOF
-sudo mv $HOME/ceph.client.radosgw.keyring /etc/ceph
-
-sudo chcon -t container_file_t /etc/ceph/*
 
 sudo openstack tripleo deploy --yes \
 --templates /usr/share/openstack-tripleo-heat-templates \
@@ -179,13 +141,11 @@ sudo openstack tripleo deploy --yes \
 --control-virtual-ip $VIP \
 -e /usr/share/openstack-tripleo-heat-templates/environments/standalone/standalone-tripleo.yaml \
 -r /usr/share/openstack-tripleo-heat-templates/roles/Standalone.yaml \
--e /usr/share/openstack-tripleo-heat-templates/environments/cephadm/cephadm.yaml \
 -e /usr/share/openstack-tripleo-heat-templates/environments/low-memory-usage.yaml \
 -e /usr/share/openstack-tripleo-heat-templates/environments/metrics/ceilometer-write-qdr.yaml \
 -e $HOME/containers-prepare-parameters.yaml \
 -e $HOME/standalone_parameters.yaml \
 -e $HOME/telemetry_services.yaml \
--e $HOME/deployed_ceph.yaml \
 --output-dir $HOME/tripleo_output \
 --reproduce-command > $HOME/standalone_deploy.log 2>&1
 
