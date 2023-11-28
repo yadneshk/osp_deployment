@@ -14,7 +14,7 @@ export NETMASK=24
 export INTERFACE=eth1
 
 sudo yum update -y && sudo yum install -y vim git curl util-linux tmux wget
-url=https://trunk.rdoproject.org/centos9/component/tripleo/current/
+url=https://trunk.rdoproject.org/centos9-wallaby/component/tripleo/current-tripleo/
 rpm_name=$(curl $url | grep python3-tripleo-repos | sed -e 's/<[^>]*>//g' | awk 'BEGIN { FS = ".rpm" } ; { print $1 }')
 rpm=$rpm_name.rpm
 sudo yum install -y $url$rpm
