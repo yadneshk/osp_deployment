@@ -8,15 +8,15 @@ export NETMASK=24
 export INTERFACE=eth1
 
 
-sudo hostnamectl set-hostname psi-standalone.localdomain
-sudo hostnamectl set-hostname psi-standalone.localdomain --transient
+sudo hostnamectl set-hostname standalone.localdomain
+sudo hostnamectl set-hostname standalone.localdomain --transient
 
-sudo yum update -y && sudo yum install -y vim git curl util-linux lvm2 tmux wget
+sudo yum update -y && sudo yum install -y vim git curl util-linux tmux wget
 url=https://trunk.rdoproject.org/centos9/component/tripleo/current/
 rpm_name=$(curl $url | grep python3-tripleo-repos | sed -e 's/<[^>]*>//g' | awk 'BEGIN { FS = ".rpm" } ; { print $1 }')
 rpm=$rpm_name.rpm
 sudo yum install -y $url$rpm
-sudo -E tripleo-repos current-tripleo-dev ceph
+sudo -E tripleo-repos -b wallaby current-tripleo-dev --stream
 sudo yum update -y
 sudo yum install -y python3-tripleoclient
 
