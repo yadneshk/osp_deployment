@@ -7,11 +7,11 @@ echo "stack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/stack
 hostnamectl set-hostname standalone.localdomain
 hostnamectl set-hostname standalone.localdomain --transient
 
+sudo -u stack -i
 export IP=192.168.24.2
 export VIP=192.168.24.3
 export NETMASK=24
 export INTERFACE=eth1
-sudo -u stack -i
 
 sudo yum update -y && sudo yum install -y vim git curl util-linux tmux wget
 url=https://trunk.rdoproject.org/centos9/component/tripleo/current/
