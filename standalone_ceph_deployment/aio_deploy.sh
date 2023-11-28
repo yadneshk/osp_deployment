@@ -22,7 +22,7 @@ sudo -E tripleo-repos -b wallaby current-tripleo-dev --stream
 sudo yum update -y
 sudo yum install -y python3-tripleoclient
 
-openstack tripleo container image prepare default --output-env-file $HOME/containers-prepare-parameters.yaml
+sudo openstack tripleo container image prepare default --output-env-file $HOME/containers-prepare-parameters.yaml
 
 cat <<EOF > $HOME/standalone_parameters.yaml
 parameter_defaults:
